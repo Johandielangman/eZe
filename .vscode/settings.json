@@ -2,8 +2,17 @@
     "python.testing.unittestEnabled": false,
     "python.testing.pytestEnabled": true,
     "cSpell.words": [
+        "autorestart",
+        "childlogdir",
+        "logfile",
         "minversion",
+        "nodaemon",
+        "pidfile",
         "pytest",
+        "rpcinterface",
+        "serverurl",
+        "supervisorctl",
+        "supervisord",
         "testpaths"
     ]
 }
