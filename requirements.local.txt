@@ -1,0 +1,5 @@
+-r tests/requirements.txt
+-r requirements.txt
+
+# New installs must run `pre-commit install --install-hooks`
+pre-commit>=4.2.0

@@ -1,3 +1,2 @@
 -r backend/requirements.txt
--r tests/requirements.txt
 -r docs/requirements.txt
