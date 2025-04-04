@@ -4,15 +4,19 @@
 #      > ^ <
 #
 # Author: Johan Hanekom
-# Date: March 2025
-#
+# Date: January 2025
+
 # ~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~
 
-from fixtures.sockets import (
-    socket_client
+# =============== // STANDARD IMPORTS // ===============
+
+from typing import (
+    Optional
 )
 
 
-__all__ = [
-    "socket_client"
-]
+def price(
+    ticker: str
+) -> Optional[float]:
+    print(f"thanks for {ticker}")
+    return None
