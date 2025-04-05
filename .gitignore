@@ -2,5 +2,7 @@
 __pycache__
 .env
 .bandit.report.txt
+tests/local/*
+!tests/local/.gitkeep
 
 docs/build

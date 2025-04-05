@@ -1,2 +1,4 @@
 Flask-SocketIO>=5.5.*
 pydantic>=2.11.2
+SQLAlchemy==2.0.*
+python-ulid==3.0.0
