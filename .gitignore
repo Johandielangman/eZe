@@ -4,5 +4,7 @@ __pycache__
 .bandit.report.txt
 tests/local/*
 !tests/local/.gitkeep
+.coverage
 
 docs/build
+docs/coverage
