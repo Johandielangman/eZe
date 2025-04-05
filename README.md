@@ -23,4 +23,5 @@ pip install -r requirements.local.txt
 
 ---
 Made with ❤ by Johandielangman
+
 [![Buy Me a Coffee](https://img.shields.io/badge/ko--fi-donate-%23FF5E5B?logo=ko-fi&logoColor=white)](https://ko-fi.com/johanlangman)
