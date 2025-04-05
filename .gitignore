@@ -6,5 +6,5 @@ tests/local/*
 !tests/local/.gitkeep
 .coverage
 
-docs/build
-docs/coverage
+docs/build/
+docs/coverage/
