@@ -4,19 +4,16 @@
 #      > ^ <
 #
 # Author: Johan Hanekom
-# Date: January 2025
-
+# Date: April 2025
+#
 # ~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~
 
-# =============== // STANDARD IMPORTS // ===============
+# =============== // IMPORT ALL PYDANTIC MODELS // ===============
 
-from typing import (
-    Optional
+from backend.modules.datastructures.stock_analysis import (
+    StockData
 )
 
-
-def price(
-    ticker: str
-) -> Optional[float]:
-    print(f"thanks for {ticker}")
-    return None
+__all__ = [
+    "StockData"
+]
