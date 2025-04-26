@@ -24,7 +24,8 @@ REPOSITORY_ROOT: Path = Path(__file__).resolve(strict=True).parent.parent
 BACKEND_ROOT: Path = REPOSITORY_ROOT / "backend"
 TESTS_ROOT: Path = REPOSITORY_ROOT / "tests"
 
-TEMPLATES_DIR: Path = BACKEND_ROOT / "templates"
+MAILER_DIR: Path = BACKEND_ROOT / "modules" / "mailer"
+TEMPLATES_DIR: Path = MAILER_DIR / "templates"
 TESTS_LOCAL_DIR: Path = TESTS_ROOT / "local"
 
 # ====> DEBUG LOGS

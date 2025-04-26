@@ -64,7 +64,7 @@ backend-dev:
 	cd backend && fastapi dev main.py
 
 backend-prod:
-	cd backend && fastapi run main.py
+	cd backend && fastapi run main.py --proxy-headers
 
 frontend-dev:
 	cd frontend && npm run dev

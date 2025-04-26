@@ -55,4 +55,4 @@ def verify_token(
         logger.info(payload)
         return TokenPayload(**payload)  # contains user info
     except Exception as e:
-        raise HTTPException(status_code=401, detail=f"Invalid token: {str(e)}")
+        raise HTTPException(status_code=401, detail=f"Token Validation Failed: {str(e)}")

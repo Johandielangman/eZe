@@ -70,7 +70,10 @@ async def log_requests(request: Request, call_next):
     process_time = time.time() - start_time
     response.headers["X-Process-Time"] = str(process_time)
     logger.debug(
-        f"Request: {request.method} {request.url} - Status: {response.status_code} - Time: {process_time:.4f}s"
+        f"[{request.client.host}] Request: "
+        f"{request.method} {request.url} - "
+        f"Status: {response.status_code} - "
+        f"Time: {process_time:.4f}s"
     )
     return response
 
@@ -85,40 +88,30 @@ async def root() -> Response:
     )
 
 
-@app.get("/ping")
-async def ping() -> Response:
-    return Response(
-        content="pong!",
-        media_type="text/plain"
-    )
-
-
 @app.get("/get_token")
 async def get_token(
-    audience: str,
-    grant_type: str,
     client_id: str,
-    client_secret: str
+    client_secret: str,
+    audience: str = f"{c.KINDE_ISSUER_URL}/api",
+    grant_type: str = "client_credentials",
 ) -> Response:
-    url = f"{c.KINDE_ISSUER_URL}/oauth2/token"
-    headers = {"Content-Type": "application/x-www-form-urlencoded"}
-    data = {
-        "audience": audience,
-        "grant_type": grant_type,
-        "client_id": client_id,
-        "client_secret": client_secret
-    }
+    logger.debug(f"Requesting token from {client_id=}")
 
     async with httpx.AsyncClient() as client:
-        response = await client.post(
-            url,
-            headers=headers,
-            data=data,
+        response: httpx.Response = await client.post(
+            url=f"{c.KINDE_ISSUER_URL}/oauth2/token",
+            headers={"Content-Type": "application/x-www-form-urlencoded"},
+            data={
+                "audience": audience,
+                "grant_type": grant_type,
+                "client_id": client_id,
+                "client_secret": client_secret
+            },
             timeout=30
         )
 
     if response.status_code != 200:
-        logger.error(f"Error: {response.status_code} - {response.text}")
+        logger.error(f"Error getting token: {response.status_code} - {response.text}")
         response.raise_for_status()
     return Response(
         content=response.text,
@@ -126,12 +119,18 @@ async def get_token(
     )
 
 
-@app.get("/kinde")
-async def kinde(user: TokenPayload = Depends(verify_token)) -> Response:
-    logger.info(f"User! {user.expires_at_local()}")
+@app.get("/ping")
+async def ping() -> Response:
+    """Test if the server is up and running"""
     return Response(
         content="pong!",
         media_type="text/plain"
     )
 
-# fastapi dev main.py
+
+@app.get("/ping_auth")
+async def kinde(user: TokenPayload = Depends(verify_token)) -> Response:
+    return Response(
+        content="pong!",
+        media_type="text/plain"
+    )

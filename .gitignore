@@ -8,3 +8,5 @@ tests/local/*
 
 docs/build/
 docs/coverage/
+
+oauth2.json
