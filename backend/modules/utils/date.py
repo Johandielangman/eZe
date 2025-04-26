@@ -4,20 +4,13 @@
 #      > ^ <
 #
 # Author: Johan Hanekom
-# Date: March 2025
+# Date: April 2025
 #
 # ~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~
 
+# =============== // STANDARD IMPORT // ===============
+import datetime
 
-from fixtures.db import (
-    sqlite_engine
-)
 
-from fixtures.fastapi import (
-    test_client
-)
-
-__all__ = [
-    sqlite_engine,
-    test_client
-]
+def get_today() -> str:
+    return datetime.date.today().strftime("%Y_%m_%d")

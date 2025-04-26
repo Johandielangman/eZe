@@ -32,15 +32,29 @@ def test_create_basic_stock(sqlite_engine: Engine):
 
 
 def test_create_user_and_portfolios(sqlite_engine: Engine):
+    # ====> Create a user
     with Session(sqlite_engine) as s:
-        user = User(name="Alice", surname="Smith")
+        user: User = User(
+            name="John",
+            surname="Smith",
+            username="johanlangman"
+        )
         s.add(user)
+        s.commit()
 
-        rsa_portfolio: Portfolios = Portfolios(name="RSA", user=user)
+    # ====> A user will create a bunch of portfolios
+    with Session(sqlite_engine) as s:
+        user: User = s.query(User).filter_by(username="johanlangman").first()
+
+        rsa_portfolio: Portfolios = Portfolios(
+            name="RSA",
+            user=user
+        )
         s.add(rsa_portfolio)
-        usa_portfolio: Portfolios = Portfolios(name="USA", user=user)
-        s.add(usa_portfolio)
+        s.commit()
 
+    # ====> Add some stocks
+    with Session(sqlite_engine) as s:
         sol_stock: Stocks = Stocks(
             ticker="SOL"
         )
@@ -49,6 +63,12 @@ def test_create_user_and_portfolios(sqlite_engine: Engine):
             ticker="BAT"
         )
         s.add(bat_stock)
+        s.commit()
+
+    with Session(sqlite_engine) as s:
+        user: User = s.query(User).filter_by(username="johanlangman").first()
+        rsa_portfolio: Portfolios = s.query(Portfolios).filter_by(user=user).first()
+        bat_stock: Stocks = s.query(Stocks).filter_by(ticker="BAT").first()
 
         holding_a: Holdings = Holdings(
             purchased_at=time.time(),

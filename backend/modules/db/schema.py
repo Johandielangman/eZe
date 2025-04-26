@@ -42,6 +42,7 @@ class User(Base):
     # ====> COLUMNS
     name: Mapped[str] = mapped_column(String(30))
     surname: Mapped[Optional[str]] = mapped_column(String(30), nullable=True)
+    username: Mapped[str] = mapped_column(String(30), unique=True)
 
     # ====> LOOKUPS
     portfolios: Mapped[List["Portfolios"]] = relationship(back_populates="user")
@@ -63,6 +64,23 @@ class Portfolios(Base):
     user: Mapped[User] = relationship(back_populates="portfolios")
 
     holdings: Mapped[List["Holdings"]] = relationship(back_populates="portfolio")
+    history: Mapped[List["History"]] = relationship(back_populates="portfolio")
+
+
+class History(Base):
+    __tablename__ = "history"
+
+    # ====> STANDARD VARIABLES
+    id: Mapped[str] = mapped_column(primary_key=True, default=lambda: str(ULID()))
+    created_at: Mapped[float] = mapped_column(default=time.time)
+    last_updated_at: Mapped[float] = mapped_column(default=time.time, onupdate=time.time)
+
+    # ====> COLUMNS
+    event: Mapped[str] = mapped_column(String(30))
+
+    # ====> LOOKUPS
+    portfolio_id: Mapped[str] = mapped_column(ForeignKey("portfolios.id"))
+    portfolio: Mapped[Portfolios] = relationship(back_populates="history")
 
 
 class Holdings(Base):

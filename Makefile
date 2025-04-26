@@ -57,3 +57,20 @@ remove-dev:
 rebuild-dev: stop-dev remove-dev build-dev run-dev
 
 rebuild-dev-80: stop-dev remove-dev build-dev run-dev-80
+
+# ========= // LOCAL DEV // =========
+
+backend-dev:
+	cd backend && fastapi dev main.py
+
+backend-prod:
+	cd backend && fastapi run main.py
+
+frontend-dev:
+	cd frontend && npm run dev
+
+frontend-build:
+	frontend && npm run build
+
+frontend-prod:
+	node -r dotenv/config build
