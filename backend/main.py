@@ -11,6 +11,7 @@
 # =============== // STANDARD IMPORT // ===============
 
 import time
+from contextlib import asynccontextmanager
 
 # =============== // LIBRARY IMPORT // ===============
 
@@ -44,10 +45,22 @@ from backend.routers.v1 import router as router_v1
 # ====> LOGGER
 utils.setup_logger(logger)
 logger.bind(name="root-logger")
-logger.debug("Starting Server 🚀")
+
+
+# ====> LIFECYCLE
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    logger.debug("Starting Server 🚀")
+    yield
+    logger.warning("Shutting down gracefully...")
+    logger.warning("Cleanup complete. Server will now exit.")
 
 # ====> APP
-app = FastAPI(**meta.fast_api_metadata)
+app = FastAPI(
+    **meta.fast_api_metadata | {
+        "lifespan": lifespan
+    }
+)
 
 # =============== // ROUTER CONFIG // ===============
 
