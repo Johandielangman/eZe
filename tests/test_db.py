@@ -13,17 +13,12 @@
 
 import time
 from sqlmodel import Session, select
-from backend.modules.datastructures.db import (
-    Stocks,
-    User,
-    Portfolios,
-    Holdings
-)
+import backend.modules.db as db
 
 
 def test_create_basic_stock(sqlite_engine):
     with Session(sqlite_engine) as s:
-        new_stock = Stocks(
+        new_stock = db.schema.Stocks(
             ticker="SOL"
         )
         s.add(new_stock)
@@ -31,9 +26,10 @@ def test_create_basic_stock(sqlite_engine):
 
 
 def test_create_user_and_portfolios(sqlite_engine):
+
     # ====> Create a user
     with Session(sqlite_engine) as s:
-        user = User(
+        user = db.schema.User(
             name="John",
             surname="Smith",
             email="jghanekom2@gmail.com"
@@ -44,10 +40,10 @@ def test_create_user_and_portfolios(sqlite_engine):
     # ====> A user will create a bunch of portfolios
     with Session(sqlite_engine) as s:
         # Updated to use exec() instead of query()
-        statement = select(User).where(User.username == "johanlangman")
+        statement = select(db.schema.User).where(db.schema.User.email == "jghanekom2@gmail.com")
         user = s.exec(statement).first()
 
-        rsa_portfolio = Portfolios(
+        rsa_portfolio = db.schema.Portfolios(
             name="RSA",
             user=user
         )
@@ -56,11 +52,11 @@ def test_create_user_and_portfolios(sqlite_engine):
 
     # ====> Add some stocks
     with Session(sqlite_engine) as s:
-        sol_stock = Stocks(
+        sol_stock = db.schema.Stocks(
             ticker="SOL"
         )
         s.add(sol_stock)
-        bat_stock = Stocks(
+        bat_stock = db.schema.Stocks(
             ticker="BAT"
         )
         s.add(bat_stock)
@@ -68,11 +64,11 @@ def test_create_user_and_portfolios(sqlite_engine):
 
     with Session(sqlite_engine) as s:
         # Updated to use exec() instead of query()
-        user = s.exec(select(User).where(User.username == "johanlangman")).first()
-        rsa_portfolio = s.exec(select(Portfolios).where(Portfolios.user_id == user.id)).first()
-        bat_stock = s.exec(select(Stocks).where(Stocks.ticker == "BAT")).first()
+        user = s.exec(select(db.schema.User).where(db.schema.User.email == "jghanekom2@gmail.com")).first()
+        rsa_portfolio = s.exec(select(db.schema.Portfolios).where(db.schema.Portfolios.user_id == user.id)).first()
+        bat_stock = s.exec(select(db.schema.Stocks).where(db.schema.Stocks.ticker == "BAT")).first()
 
-        holding_a = Holdings(
+        holding_a = db.schema.Holdings(
             purchased_at=time.time(),
             portfolio=rsa_portfolio,
             stock=bat_stock

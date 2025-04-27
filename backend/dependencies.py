@@ -23,6 +23,7 @@ from typing import (
 from loguru import logger
 from fastapi import (
     Depends,
+    Request,
     HTTPException
 )
 from fastapi.security import (
@@ -37,7 +38,7 @@ from kinde_sdk import Configuration
 
 # =============== // MODULE IMPORT // ===============
 
-from modules.datastructures.db import _create_db_and_tables
+import modules.db as db
 from modules.datastructures.api import TokenPayload
 import constants as c
 
@@ -54,12 +55,15 @@ engine: 'Engine' = create_engine(c.DATABASE_URL)
 # =============== // DATABASE DEPENDENCIES // ===============
 
 def create_db_and_tables() -> None:
-    _create_db_and_tables(engine=engine)
+    db.schema._create_db_and_tables(engine=engine)
 
 
-def get_session() -> Generator[Session, None, None]:
-    with Session(engine) as session:
-        yield session
+def get_session(request: Request) -> Generator[Session, None, None]:
+    if "get_session" in request.app.dependency_overrides:
+        yield request.app.dependency_overrides["get_session"]()
+    else:
+        with Session(engine) as session:
+            yield session
 
 # =============== // AUTHENTICATION DEPENDENCIES // ===============
 
@@ -78,9 +82,18 @@ def get_kinde_client() -> KindeApiClient:
 
 
 def verify_token(
-    credentials: HTTPAuthorizationCredentials = Depends(security)
+    request: Request,
+    credentials: HTTPAuthorizationCredentials = Depends(security),
 ) -> TokenPayload:
     logger.debug("Verifying user...")
+
+    if (
+        hasattr(request.app, "override_auth") and
+        request.app.override_auth
+    ):
+        logger.debug("Skipping token verification in test mode")
+        return TokenPayload()
+
     try:
         client: KindeApiClient = get_kinde_client()
         decoded_token: Dict = client._decode_token_if_needed_value(

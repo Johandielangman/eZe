@@ -28,11 +28,7 @@ from fastapi import (
 
 # =============== // MODULE IMPORT // ===============
 
-from modules.datastructures.db import (
-    User,
-    UserCreate,
-    UserRead
-)
+import modules.db as db
 from dependencies import (
     verify_token,
     get_session
@@ -50,23 +46,23 @@ router: APIRouter = APIRouter(
 # =============== // ROUTES // ===============
 
 
-@router.post("/", response_model=UserRead, status_code=status.HTTP_201_CREATED)
+@router.post("/", response_model=db.schema.UserRead, status_code=status.HTTP_201_CREATED)
 def create_user(
-    user: UserCreate,
+    user: db.schema.UserCreate,
     session: Session = Depends(get_session)
 ):
     """Create a new user in the database
     You don't _have_ to give a user id! The server can create one FOR you (UUID).
     But it is highly recommended to use the Kinde User Id for this step!
     """
-    db_user = User.model_validate(user)
+    db_user = db.schema.User.model_validate(user)
     session.add(db_user)
     session.commit()
     session.refresh(db_user)
     return db_user
 
 
-@router.get("/", response_model=List[UserRead])
+@router.get("/", response_model=List[db.schema.UserRead])
 def read_users(
     skip: int = 0,
     limit: int = 100,
@@ -75,5 +71,5 @@ def read_users(
     """Read users from the database
     TODO: Add permissions! Lol.
     """
-    users: List[UserRead] = session.exec(select(User).offset(skip).limit(limit)).all()
+    users: List[db.schema.UserRead] = session.exec(select(db.schema.User).offset(skip).limit(limit)).all()
     return users

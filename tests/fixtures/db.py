@@ -15,8 +15,13 @@ from pathlib import Path
 # =============== // LIBRARY IMPORTS // ===============
 
 import pytest
-from sqlmodel import create_engine, SQLModel
+from sqlmodel import create_engine
 from sqlalchemy.engine import Engine
+
+
+# =============== // MODULE IMPORT // ===============
+
+import backend.modules.db as db
 
 
 @pytest.fixture
@@ -38,6 +43,6 @@ def sqlite_engine() -> Engine:
     engine: Engine = create_engine(f"sqlite:///{db_path}")
 
     # ====> Create all the tables
-    SQLModel.metadata.create_all(engine)
+    db.schema._create_db_and_tables(engine)
 
     return engine
