@@ -13,54 +13,55 @@
 
 import traceback
 from typing import (
-    Annotated,
+    TYPE_CHECKING,
+    Generator,
     Dict
 )
 
 # =============== // LIBRARY IMPORT // ===============
 
-import requests
 from loguru import logger
 from fastapi import (
     Depends,
-    HTTPException,
-    Header
+    HTTPException
 )
 from fastapi.security import (
     HTTPBearer,
     HTTPAuthorizationCredentials
 )
 
+from sqlmodel import Session, create_engine
 from kinde_sdk.kinde_api_client import KindeApiClient
 from kinde_sdk import Configuration
 
 
 # =============== // MODULE IMPORT // ===============
 
+from modules.datastructures.db import _create_db_and_tables
 from modules.datastructures.api import TokenPayload
 import constants as c
 
+# =============== // SETUP // ===============
+
+if TYPE_CHECKING:
+    from sqlalchemy.engine import Engine
+
 
 security = HTTPBearer()
+engine: 'Engine' = create_engine(c.DATABASE_URL)
 
 
-async def get_token_header(x_token: Annotated[str, Header()]):
-    if x_token != "fake-super-secret-token":
-        raise HTTPException(status_code=400, detail="X-Token header invalid")
+# =============== // DATABASE DEPENDENCIES // ===============
+
+def create_db_and_tables() -> None:
+    _create_db_and_tables(engine=engine)
 
 
-async def get_query_token(token: str):
-    if token != "jessica":
-        raise HTTPException(status_code=400, detail="No Jessica token provided")
+def get_session() -> Generator[Session, None, None]:
+    with Session(engine) as session:
+        yield session
 
-
-def get_public_key():
-    jwks_url = f"{c.KINDE_ISSUER_URL}/.well-known/jwks"
-    jwks = requests.get(
-        url=jwks_url,
-        timeout=30
-    ).json()
-    return jwks
+# =============== // AUTHENTICATION DEPENDENCIES // ===============
 
 
 def get_kinde_client() -> KindeApiClient:

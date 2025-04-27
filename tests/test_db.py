@@ -12,9 +12,8 @@
 # =============== // LIBRARY IMPORTS // ===============
 
 import time
-from sqlalchemy.engine import Engine
-from sqlalchemy.orm import Session
-from backend.modules.db.schema import (
+from sqlmodel import Session, select
+from backend.modules.datastructures.db import (
     Stocks,
     User,
     Portfolios,
@@ -22,31 +21,33 @@ from backend.modules.db.schema import (
 )
 
 
-def test_create_basic_stock(sqlite_engine: Engine):
+def test_create_basic_stock(sqlite_engine):
     with Session(sqlite_engine) as s:
-        new_stock: Stocks = Stocks(
+        new_stock = Stocks(
             ticker="SOL"
         )
         s.add(new_stock)
         s.commit()
 
 
-def test_create_user_and_portfolios(sqlite_engine: Engine):
+def test_create_user_and_portfolios(sqlite_engine):
     # ====> Create a user
     with Session(sqlite_engine) as s:
-        user: User = User(
+        user = User(
             name="John",
             surname="Smith",
-            username="johanlangman"
+            email="jghanekom2@gmail.com"
         )
         s.add(user)
         s.commit()
 
     # ====> A user will create a bunch of portfolios
     with Session(sqlite_engine) as s:
-        user: User = s.query(User).filter_by(username="johanlangman").first()
+        # Updated to use exec() instead of query()
+        statement = select(User).where(User.username == "johanlangman")
+        user = s.exec(statement).first()
 
-        rsa_portfolio: Portfolios = Portfolios(
+        rsa_portfolio = Portfolios(
             name="RSA",
             user=user
         )
@@ -55,22 +56,23 @@ def test_create_user_and_portfolios(sqlite_engine: Engine):
 
     # ====> Add some stocks
     with Session(sqlite_engine) as s:
-        sol_stock: Stocks = Stocks(
+        sol_stock = Stocks(
             ticker="SOL"
         )
         s.add(sol_stock)
-        bat_stock: Stocks = Stocks(
+        bat_stock = Stocks(
             ticker="BAT"
         )
         s.add(bat_stock)
         s.commit()
 
     with Session(sqlite_engine) as s:
-        user: User = s.query(User).filter_by(username="johanlangman").first()
-        rsa_portfolio: Portfolios = s.query(Portfolios).filter_by(user=user).first()
-        bat_stock: Stocks = s.query(Stocks).filter_by(ticker="BAT").first()
+        # Updated to use exec() instead of query()
+        user = s.exec(select(User).where(User.username == "johanlangman")).first()
+        rsa_portfolio = s.exec(select(Portfolios).where(Portfolios.user_id == user.id)).first()
+        bat_stock = s.exec(select(Stocks).where(Stocks.ticker == "BAT")).first()
 
-        holding_a: Holdings = Holdings(
+        holding_a = Holdings(
             purchased_at=time.time(),
             portfolio=rsa_portfolio,
             stock=bat_stock

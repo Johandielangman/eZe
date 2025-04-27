@@ -14,7 +14,7 @@ from fastapi import APIRouter
 
 # =============== // MODULE IMPORT // ===============
 
-from backend.routers.v1 import users
+from routers.v1 import users
 
 
 # =============== // DEFINE THE ROUTER // ===============

@@ -17,5 +17,7 @@
         "supervisord",
         "testpaths",
         "yagmail"
-    ]
+    ],
+    "postman.settings.dotenv-detection-notification-visibility": false,
+    "makefile.configureOnOpen": false
 }

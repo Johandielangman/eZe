@@ -10,7 +10,7 @@
 
 # =============== // IMPORT ALL PYDANTIC MODELS // ===============
 
-from modules.datastructures.stock_analysis import (
+from .stock_analysis import (
     StockData
 )
 

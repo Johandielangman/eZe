@@ -49,6 +49,7 @@ ERROR_LOGS_DIR.mkdir(parents=True, exist_ok=True)
 ENV_FILE_PATH: Path = BACKEND_ROOT / ".env"
 GOOGLE_OATH_JSON_PATH: Path = MAILER_DIR / "oauth2.json"
 VERSION_FILE_PATH: Path = REPOSITORY_ROOT / "version.txt"
+DB_PATH: Path = REPOSITORY_ROOT / "database.db"
 
 # =============== // LOAD ENVIRONMENT VARIABLES FROM .ENV // ===============
 
@@ -100,3 +101,7 @@ if any([
 TZ: str = "Africa/Johannesburg"
 DFORMAT_DATE_FOR_FILE: str = "%Y_%m_%d"
 LANGUAGE: str = "en-gb"
+
+# =============== // DATABASE // ===============
+
+DATABASE_URL: str = f"sqlite:///{DB_PATH}"

@@ -8,12 +8,16 @@
 #
 # ~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~
 
+import sys
+from pathlib import Path
 
-from fixtures.db import (
+sys.path.append(str(Path(__file__).parent.parent / "backend"))
+
+from .fixtures.db import ( # NOQA
     sqlite_engine
 )
 
-from fixtures.fastapi import (
+from .fixtures.fastapi import ( # NOQA
     test_client
 )
 

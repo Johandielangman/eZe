@@ -15,18 +15,15 @@ from pathlib import Path
 # =============== // LIBRARY IMPORTS // ===============
 
 import pytest
-from sqlalchemy import create_engine
+from sqlmodel import create_engine, SQLModel
 from sqlalchemy.engine import Engine
-from backend.modules.db.schema import (
-    Base
-)
 
 
 @pytest.fixture
 def sqlite_engine() -> Engine:
-    """A fixture used to create a blank database using the Base metadata
-    If an old one already exist, it will be removed before creating a new one.
-    If the blank database creation is successful, it will be returned as a fixture
+    """A fixture used to create a blank database using the SQLModel metadata.
+    If an old database already exists, it will be removed before creating a new one.
+    If the blank database creation is successful, it will be returned as a fixture.
 
     Returns:
         Engine: The engine used to connect to the blank database
@@ -41,6 +38,6 @@ def sqlite_engine() -> Engine:
     engine: Engine = create_engine(f"sqlite:///{db_path}")
 
     # ====> Create all the tables
-    Base.metadata.create_all(engine)
+    SQLModel.metadata.create_all(engine)
 
     return engine
