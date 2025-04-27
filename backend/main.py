@@ -23,6 +23,10 @@ from fastapi import (
     Response,
     Request
 )
+from fastapi.responses import (
+    HTMLResponse,
+    FileResponse
+)
 
 # =============== // MODULE IMPORT // ===============
 
@@ -147,3 +151,13 @@ async def kinde(user: TokenPayload = Depends(verify_token)) -> Response:
         content="pong!",
         media_type="text/plain"
     )
+
+
+@app.get("/terms", include_in_schema=False)
+async def terms() -> HTMLResponse:
+    return HTMLResponse((c.META_DIR / "terms.html").read_text())
+
+
+@app.get('/favicon.ico', include_in_schema=False)
+async def favicon():
+    return FileResponse(str(c.ASSETS_ROOT / "images" / "favicon.ico"))

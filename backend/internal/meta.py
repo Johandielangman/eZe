@@ -36,22 +36,26 @@ tags_metadata: List[Dict] = [
     },
 ]
 
+
+def read_markdown(file_name: str, extension: str = "md") -> str:
+    return (c.META_DIR / f"{file_name}.{extension}").read_text()
+
+
 fast_api_metadata: Dict = {
     "title": "eZe Finance",
-    "description": "magic",
-    "summary": "",
+    "description": read_markdown("DESCRIPTION"),
+    "summary": read_markdown("SUMMARY", "txt"),
     "version": c.VERSION,
-    "terms_of_service": "http://example.com/terms/",
+    "terms_of_service": "/terms",
     "openapi_tags": tags_metadata,
-    "docs_url": "/docs",
+    "docs_url": "/api-docs",
     "redoc_url": None,
     "contact": {
-        "name": "Deadpoolio the Amazing",
-        "url": "http://x-force.example.com/contact/",
-        "email": "dp@x-force.example.com",
+        "name": "Johandielangman",
+        "email": "jghanekom2@gmail.com",
     },
     "license_info": {
-        "name": "Apache 2.0",
-        "url": "https://www.apache.org/licenses/LICENSE-2.0.html",
+        "name": "MIT",
+        "url": "https://opensource.org/license/mit",
     }
 }
