@@ -24,12 +24,12 @@ from pydantic import BaseModel, Field
 
 # =============== // MODULE IMPORT // ===============
 
-import backend.modules.utils as utils
+import modules.utils as utils
 
 
 class TokenPayload(BaseModel):
     application_properties: Optional[dict] = Field(default_factory=dict)
-    aud: List[str] = Field(default_factory=list)
+    aud: Optional[List[str]] = Field(default_factory=list)
     azp: str
     exp: int
     gty: List[str] = Field(default_factory=list)
@@ -39,6 +39,7 @@ class TokenPayload(BaseModel):
     scope: str
     scp: List[str] = Field(default_factory=list)
     v: str
+    token: str
 
     def expires_at(self) -> datetime:
         """JHB timezone-aware expiry datetime"""
@@ -47,3 +48,15 @@ class TokenPayload(BaseModel):
     def issued_at(self) -> datetime:
         """JHB timezone-aware issued datetime"""
         return utils.from_timestamp(self.iat)
+
+
+class AccessTokenResponse(BaseModel):
+    access_token: str
+    expires_in: int
+    scope: str
+    token_type: str
+    expires_at: int
+
+    def expires_at_datetime(self) -> datetime:
+        """JHB timezone-aware expiry datetime"""
+        return utils.from_timestamp(self.expires_at)

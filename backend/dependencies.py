@@ -3,7 +3,10 @@ from fastapi import Depends, HTTPException, Header
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 import jwt
 import requests
-from backend.modules.datastructures.api import TokenPayload
+from modules.datastructures.api import TokenPayload
+from kinde_sdk.kinde_api_client import KindeApiClient
+from kinde_sdk import Configuration
+import constants as c
 
 from loguru import logger
 
@@ -34,6 +37,19 @@ def get_public_key():
     return jwks
 
 
+def kinde_client() -> KindeApiClient:
+    kinde_client = KindeApiClient(**{
+        "configuration": Configuration(host=c.KINDE_ISSUER_URL),
+        "domain": c.KINDE_ISSUER_URL,
+        "client_id": c.KINDE_CLIENT_ID,
+        "client_secret": c.KINDE_CLIENT_SECRET,
+        "grant_type": c.KINDE_GRANT_TYPE,
+        "callback_url": "http://localhost:8000/auth/kinde_callback",
+        "code_verifier": "joasd923nsad09823noaguesr9u3qtewrnaio90eutgersgdsfg"
+    })
+    return kinde_client
+
+
 def verify_token(
     credentials: HTTPAuthorizationCredentials = Depends(security)
 ) -> TokenPayload:
@@ -49,10 +65,9 @@ def verify_token(
             token,
             key=jwt.algorithms.RSAAlgorithm.from_jwk(key),
             issuer=KIND_ISSUER,
-            audience="https://happybread.kinde.com/api",
             algorithms=["RS256"],
         )
         logger.info(payload)
-        return TokenPayload(**payload)  # contains user info
+        return TokenPayload(**payload | {"token": token})  # contains user info
     except Exception as e:
         raise HTTPException(status_code=401, detail=f"Token Validation Failed: {str(e)}")

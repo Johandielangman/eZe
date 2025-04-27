@@ -10,17 +10,27 @@
 
 # =============== // LIBRARY IMPORT // ===============
 
-from fastapi import APIRouter
+from fastapi import (
+    APIRouter,
+    Depends
+)
 
 # =============== // MODULE IMPORT // ===============
 
-from routers.v1 import template
+from dependencies import verify_token
 
-
-# =============== // DEFINE THE ROUTER // ===============
+# =============== // ROUTER // ===============
 
 router: APIRouter = APIRouter(
-    prefix="/v1",
+    prefix="/items",
+    tags=["items"],
+    dependencies=[Depends(verify_token)],
     responses={404: {"description": "Not found"}},
 )
-router.include_router(template.router)
+
+# =============== // ROUTES // ===============
+
+
+@router.get("/")
+async def root():
+    return "Hello from root!"

@@ -17,8 +17,8 @@ from typing import (
 
 # =============== // MODULE IMPORT // ===============
 
-from backend.modules.utils.date import get_today
-import backend.constants as c
+from modules.utils.date import get_today
+import constants as c
 
 # =============== // SETUP // ===============
 

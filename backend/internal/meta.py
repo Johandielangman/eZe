@@ -17,7 +17,7 @@ from typing import (
 
 # =============== // MODULE IMPORT // ===============
 
-import backend.constants as c
+import constants as c
 
 # =============== // DEFINE METADATA // ===============
 

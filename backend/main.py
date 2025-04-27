@@ -17,6 +17,7 @@ from contextlib import asynccontextmanager
 
 from loguru import logger
 import httpx
+import uvicorn
 from fastapi import (
     Depends,
     FastAPI,
@@ -28,20 +29,21 @@ from fastapi.responses import (
     FileResponse
 )
 
+
 # =============== // MODULE IMPORT // ===============
 
-from backend.modules.datastructures.api import TokenPayload
-import backend.constants as c
-import backend.modules.utils as utils
-from backend.internal import admin, meta
-from backend.dependencies import (
+import constants as c
+import modules.utils as utils
+from internal import admin, meta
+from dependencies import (
     get_query_token,
-    get_token_header,
-    verify_token
+    get_token_header
 )
 
+
 # ====> APIs
-from backend.routers.v1 import router as router_v1
+from routers.v1 import router as router_v1
+from routers.auth import router as auth_router
 
 
 # =============== // SETUP // ===============
@@ -69,6 +71,7 @@ app = FastAPI(
 # =============== // ROUTER CONFIG // ===============
 
 app.include_router(router_v1)
+app.include_router(auth_router)
 app.include_router(
     admin.router,
     prefix="/admin",
@@ -79,6 +82,7 @@ app.include_router(
 
 
 # =============== // MIDDLEWARE // ===============
+
 
 @app.middleware("http")
 async def log_requests(request: Request, call_next):
@@ -99,10 +103,7 @@ async def log_requests(request: Request, call_next):
 
 @app.get("/")
 async def root() -> Response:
-    return Response(
-        content="Hello from root!",
-        media_type="text/plain"
-    )
+    return HTMLResponse((c.META_DIR / "index.html").read_text())
 
 
 @app.get("/get_token")
@@ -145,14 +146,6 @@ async def ping() -> Response:
     )
 
 
-@app.get("/ping_auth")
-async def kinde(user: TokenPayload = Depends(verify_token)) -> Response:
-    return Response(
-        content="pong!",
-        media_type="text/plain"
-    )
-
-
 @app.get("/terms", include_in_schema=False)
 async def terms() -> HTMLResponse:
     return HTMLResponse((c.META_DIR / "terms.html").read_text())
@@ -161,3 +154,7 @@ async def terms() -> HTMLResponse:
 @app.get('/favicon.ico', include_in_schema=False)
 async def favicon():
     return FileResponse(str(c.ASSETS_ROOT / "images" / "favicon.ico"))
+
+
+if __name__ == "__main__":
+    uvicorn.run(app, host="127.0.0.1", port=8000)

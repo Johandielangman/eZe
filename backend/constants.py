@@ -20,6 +20,7 @@ from typing import (
 # =============== // LIBRARY IMPORT // ===============
 
 from dotenv import load_dotenv
+from kinde_sdk.kinde_api_client import GrantType
 
 # =============== // DIRECTORIES // ===============
 
@@ -66,6 +67,7 @@ VERSION: str = "v" + VERSION_FILE_PATH.read_text(
 KINDE_CLIENT_ID: str = os.getenv("KINDE_CLIENT_ID")
 KINDE_CLIENT_SECRET: str = os.getenv("KINDE_CLIENT_SECRET")
 KINDE_ISSUER_URL: str = os.getenv("KINDE_ISSUER_URL")
+KINDE_GRANT_TYPE = GrantType.CLIENT_CREDENTIALS
 
 if any([
     not KINDE_CLIENT_ID,

@@ -18,7 +18,7 @@ import arrow
 
 # =============== // CONSTANTS // ===============
 
-import backend.constants as c
+import constants as c
 
 
 def get_today(format_: str = c.DFORMAT_DATE_FOR_FILE) -> str:
