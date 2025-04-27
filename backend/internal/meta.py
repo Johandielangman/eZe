@@ -24,15 +24,7 @@ import constants as c
 tags_metadata: List[Dict] = [
     {
         "name": "users",
-        "description": "Operations with users. The **login** logic is also here.",
-    },
-    {
-        "name": "items",
-        "description": "Manage items. So _fancy_ they have their own docs.",
-        "externalDocs": {
-            "description": "Items external docs",
-            "url": "https://fastapi.tiangolo.com/",
-        },
+        "description": "Manage users in the database!"
     },
 ]
 

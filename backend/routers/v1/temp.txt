@@ -22,8 +22,8 @@ from dependencies import verify_token
 # =============== // ROUTER // ===============
 
 router: APIRouter = APIRouter(
-    prefix="/items",
-    tags=["items"],
+    prefix="/users",
+    tags=["users"],
     dependencies=[Depends(verify_token)],
     responses={404: {"description": "Not found"}},
 )

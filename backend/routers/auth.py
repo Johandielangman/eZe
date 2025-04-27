@@ -34,7 +34,7 @@ from fastapi.responses import (
 from modules.datastructures.api import TokenPayload, AccessTokenResponse
 from dependencies import (
     verify_token,
-    kinde_client
+    get_kinde_client
 )
 
 if TYPE_CHECKING:
@@ -60,7 +60,7 @@ async def kinde(user: TokenPayload = Depends(verify_token)) -> Response:
 
 
 @router.get('/login', include_in_schema=False)
-async def login(kinde_client: 'KindeApiClient' = Depends(kinde_client)):
+async def login(kinde_client: 'KindeApiClient' = Depends(get_kinde_client)):
     return RedirectResponse(kinde_client.get_login_url())
 
 
@@ -68,13 +68,13 @@ async def login(kinde_client: 'KindeApiClient' = Depends(kinde_client)):
 async def kinde_callback(
     code: str,
     request: Request,
-    kinde_client: 'KindeApiClient' = Depends(kinde_client),
+    kinde_client: 'KindeApiClient' = Depends(get_kinde_client),
     scope: str = None,
     state: str = None
 ) -> AccessTokenResponse:
     logger.debug(f"Received callback with {code=}, {scope=}, {state=}")
     try:
-        return AccessTokenResponse(**kinde_client.fetch_token_value(authorization_response=request.url))
+        return AccessTokenResponse(**kinde_client.fetch_token_value(authorization_response=str(request.url)))
     except ApiException as e:
         logger.error(f"Error getting token: {e}")
         return Response(

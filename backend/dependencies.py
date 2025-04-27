@@ -1,21 +1,47 @@
-from typing import Annotated
-from fastapi import Depends, HTTPException, Header
-from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
-import jwt
+# ~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~
+#      /\_/\
+#     ( o.o )
+#      > ^ <
+#
+# Author: Johan Hanekom
+# Date: April 2025
+#
+# ~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~
+
+
+# =============== // STANDARD IMPORT // ===============
+
+import traceback
+from typing import (
+    Annotated,
+    Dict
+)
+
+# =============== // LIBRARY IMPORT // ===============
+
 import requests
-from modules.datastructures.api import TokenPayload
+from loguru import logger
+from fastapi import (
+    Depends,
+    HTTPException,
+    Header
+)
+from fastapi.security import (
+    HTTPBearer,
+    HTTPAuthorizationCredentials
+)
+
 from kinde_sdk.kinde_api_client import KindeApiClient
 from kinde_sdk import Configuration
+
+
+# =============== // MODULE IMPORT // ===============
+
+from modules.datastructures.api import TokenPayload
 import constants as c
 
-from loguru import logger
 
 security = HTTPBearer()
-
-# Replace with your actual values
-KIND_AUTH_DOMAIN = "https://happybread.kinde.com"
-KIND_AUDIENCE = "https://happybread.kinde.com/api"
-KIND_ISSUER = f"{KIND_AUTH_DOMAIN}"
 
 
 async def get_token_header(x_token: Annotated[str, Header()]):
@@ -29,7 +55,7 @@ async def get_query_token(token: str):
 
 
 def get_public_key():
-    jwks_url = f"{KIND_AUTH_DOMAIN}/.well-known/jwks"
+    jwks_url = f"{c.KINDE_ISSUER_URL}/.well-known/jwks"
     jwks = requests.get(
         url=jwks_url,
         timeout=30
@@ -37,7 +63,7 @@ def get_public_key():
     return jwks
 
 
-def kinde_client() -> KindeApiClient:
+def get_kinde_client() -> KindeApiClient:
     kinde_client = KindeApiClient(**{
         "configuration": Configuration(host=c.KINDE_ISSUER_URL),
         "domain": c.KINDE_ISSUER_URL,
@@ -54,20 +80,14 @@ def verify_token(
     credentials: HTTPAuthorizationCredentials = Depends(security)
 ) -> TokenPayload:
     logger.debug("Verifying user...")
-    token = credentials.credentials
     try:
-        jwks = get_public_key()
-        unverified_header = jwt.get_unverified_header(token)
-        kid = unverified_header["kid"]
-        key = next(k for k in jwks["keys"] if k["kid"] == kid)
-
-        payload = jwt.decode(
-            token,
-            key=jwt.algorithms.RSAAlgorithm.from_jwk(key),
-            issuer=KIND_ISSUER,
-            algorithms=["RS256"],
+        client: KindeApiClient = get_kinde_client()
+        decoded_token: Dict = client._decode_token_if_needed_value(
+            "access_token",
+            {"access_token": credentials.credentials}
         )
-        logger.info(payload)
-        return TokenPayload(**payload | {"token": token})  # contains user info
+        return TokenPayload(**decoded_token['access_token'] | {"token": credentials.credentials})
     except Exception as e:
-        raise HTTPException(status_code=401, detail=f"Token Validation Failed: {str(e)}")
+        logger.error(f"Token Validation failed: {e}")
+        logger.debug(traceback.format_exc())
+        raise HTTPException(status_code=401, detail="Token Validation Failed")

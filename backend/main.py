@@ -10,16 +10,15 @@
 
 # =============== // STANDARD IMPORT // ===============
 
-import time
 from contextlib import asynccontextmanager
+import argparse
+import time
 
 # =============== // LIBRARY IMPORT // ===============
 
 from loguru import logger
-import httpx
 import uvicorn
 from fastapi import (
-    Depends,
     FastAPI,
     Response,
     Request
@@ -34,12 +33,7 @@ from fastapi.responses import (
 
 import constants as c
 import modules.utils as utils
-from internal import admin, meta
-from dependencies import (
-    get_query_token,
-    get_token_header
-)
-
+from internal import meta
 
 # ====> APIs
 from routers.v1 import router as router_v1
@@ -72,13 +66,6 @@ app = FastAPI(
 
 app.include_router(router_v1)
 app.include_router(auth_router)
-app.include_router(
-    admin.router,
-    prefix="/admin",
-    tags=["admin"],
-    dependencies=[Depends(get_token_header), Depends(get_query_token)],
-    responses={418: {"description": "I'm a teapot"}},
-)
 
 
 # =============== // MIDDLEWARE // ===============
@@ -106,37 +93,6 @@ async def root() -> Response:
     return HTMLResponse((c.META_DIR / "index.html").read_text())
 
 
-@app.get("/get_token")
-async def get_token(
-    client_id: str,
-    client_secret: str,
-    audience: str = f"{c.KINDE_ISSUER_URL}/api",
-    grant_type: str = "client_credentials",
-) -> Response:
-    logger.debug(f"Requesting token from {client_id=}")
-
-    async with httpx.AsyncClient() as client:
-        response: httpx.Response = await client.post(
-            url=f"{c.KINDE_ISSUER_URL}/oauth2/token",
-            headers={"Content-Type": "application/x-www-form-urlencoded"},
-            data={
-                "audience": audience,
-                "grant_type": grant_type,
-                "client_id": client_id,
-                "client_secret": client_secret
-            },
-            timeout=30
-        )
-
-    if response.status_code != 200:
-        logger.error(f"Error getting token: {response.status_code} - {response.text}")
-        response.raise_for_status()
-    return Response(
-        content=response.text,
-        media_type="application/json"
-    )
-
-
 @app.get("/ping")
 async def ping() -> Response:
     """Test if the server is up and running"""
@@ -157,4 +113,22 @@ async def favicon():
 
 
 if __name__ == "__main__":
-    uvicorn.run(app, host="127.0.0.1", port=8000)
+    parser = argparse.ArgumentParser(description="Run FastAPI server with options.")
+
+    parser.add_argument("--host", type=str, default="127.0.0.1", help="Host address")
+    parser.add_argument("--port", type=int, default=8000, help="Port number")
+    parser.add_argument("--reload", action="store_true", help="Enable auto-reload")
+    parser.add_argument("--proxy-headers", action="store_true", help="Enable proxy headers")
+    parser.add_argument("--root-path", type=str, default="", help="Set root path for the application")
+
+    args = parser.parse_args()
+    logger.info(f"args received: {args}")
+
+    uvicorn.run(
+        "main:app",
+        host=args.host,
+        port=args.port,
+        reload=args.reload,
+        proxy_headers=args.proxy_headers,
+        root_path=args.root_path
+    )

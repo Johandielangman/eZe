@@ -30,16 +30,20 @@ import modules.utils as utils
 class TokenPayload(BaseModel):
     application_properties: Optional[dict] = Field(default_factory=dict)
     aud: Optional[List[str]] = Field(default_factory=list)
-    azp: str
-    exp: int
-    gty: List[str] = Field(default_factory=list)
-    iat: int
-    iss: str
-    jti: str
-    scope: str
+    azp: Optional[str] = None
+    email: Optional[str] = None
+    exp: Optional[int] = None
+    iat: Optional[int] = None
+    iss: Optional[str] = None
+    jti: Optional[str] = None
+    org_code: Optional[str] = None
+    org_name: Optional[str] = None
+    permissions: Optional[List[str]] = Field(default_factory=list)
+    scope: Optional[str] = None
     scp: List[str] = Field(default_factory=list)
-    v: str
-    token: str
+    sub: Optional[str] = None
+    v: Optional[str] = None
+    token: Optional[str] = None
 
     def expires_at(self) -> datetime:
         """JHB timezone-aware expiry datetime"""
@@ -53,10 +57,8 @@ class TokenPayload(BaseModel):
 class AccessTokenResponse(BaseModel):
     access_token: str
     expires_in: int
+    id_token: str
+    refresh_token: str
     scope: str
     token_type: str
     expires_at: int
-
-    def expires_at_datetime(self) -> datetime:
-        """JHB timezone-aware expiry datetime"""
-        return utils.from_timestamp(self.expires_at)
