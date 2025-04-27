@@ -11,7 +11,11 @@
 # =============== // STANDARD IMPORT // ===============
 
 import os
+import json
 from pathlib import Path
+from typing import (
+    Dict
+)
 
 # =============== // LIBRARY IMPORT // ===============
 
@@ -40,6 +44,8 @@ ERROR_LOGS_DIR.mkdir(parents=True, exist_ok=True)
 # =============== // PATHS // ===============
 
 ENV_FILE_PATH: Path = BACKEND_ROOT / ".env"
+GOOGLE_OATH_JSON_PATH: Path = MAILER_DIR / "oauth2.json"
+VERSION_FILE_PATH: Path = REPOSITORY_ROOT / "version.txt"
 
 # =============== // LOAD ENVIRONMENT VARIABLES FROM .ENV // ===============
 
@@ -48,9 +54,7 @@ if ENV_FILE_PATH.exists():
 
 # =============== // VERSION // ===============
 
-VERSION: str = "v" + (
-    REPOSITORY_ROOT / "version.txt"
-).read_text(
+VERSION: str = "v" + VERSION_FILE_PATH.read_text(
     encoding="utf-8"
 ).strip()
 
@@ -69,3 +73,26 @@ if any([
     raise ValueError(
         "KINDE_CLIENT_ID, KINDE_CLIENT_SECRET, and KINDE_ISSUER_URL must be set in the environment variables."
     )
+
+# =============== // GOOGLE EMAIL OAUTH // ===============
+
+GMAIL_EMAIL_ADDRESS: str = os.getenv("GMAIL_EMAIL_ADDRESS")
+
+GOOGLE_OATH: Dict = {
+    "email_address": GMAIL_EMAIL_ADDRESS,
+    "google_client_id": os.getenv("GOOGLE_CLIENT_ID"),
+    "google_client_secret": os.getenv("GOOGLE_CLIENT_SECRET"),
+    "google_refresh_token": os.getenv("GOOGLE_REFRESH_TOKEN")
+}
+GOOGLE_OATH_JSON_PATH.write_text(json.dumps(GOOGLE_OATH, indent=4))
+if any([
+    not value
+    for value in GOOGLE_OATH.keys()
+]):
+    raise ValueError("Google Oauth variables not set")
+
+# =============== // DATE TIME FORMATS // ===============
+
+TZ: str = "Africa/Johannesburg"
+DFORMAT_DATE_FOR_FILE: str = "%Y_%m_%d"
+LANGUAGE: str = "en-gb"

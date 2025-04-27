@@ -9,8 +9,25 @@
 # ~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~
 
 # =============== // STANDARD IMPORT // ===============
+
 import datetime
 
+# =============== // LIBRARY IMPORT // ===============
 
-def get_today() -> str:
-    return datetime.date.today().strftime("%Y_%m_%d")
+import arrow
+
+# =============== // CONSTANTS // ===============
+
+import backend.constants as c
+
+
+def get_today(format_: str = c.DFORMAT_DATE_FOR_FILE) -> str:
+    return arrow.now(c.TZ).format(format_)
+
+
+def from_timestamp(timestamp: int) -> datetime:
+    return arrow.get(timestamp).to(c.TZ).datetime
+
+
+def humanize(date: datetime) -> str:
+    return arrow.get(date).humanize(locale=c.LANGUAGE)  # type: ignore

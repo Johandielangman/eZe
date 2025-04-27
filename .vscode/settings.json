@@ -4,6 +4,7 @@
     "cSpell.words": [
         "autorestart",
         "childlogdir",
+        "DFORMAT",
         "logfile",
         "minversion",
         "nodaemon",

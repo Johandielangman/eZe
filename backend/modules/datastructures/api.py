@@ -1,6 +1,30 @@
+# ~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~
+#      /\_/\
+#     ( o.o )
+#      > ^ <
+#
+# Author: Johan Hanekom
+# Date: April 2025
+#
+# ~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~
+
+# =============== // STANDARD IMPORT // ===============
+
+from typing import (
+    List,
+    Optional
+)
+from datetime import (
+    datetime
+)
+
+# =============== // LIBRARY IMPORT // ===============
+
 from pydantic import BaseModel, Field
-from typing import List, Optional
-from datetime import datetime, timezone, timedelta
+
+# =============== // MODULE IMPORT // ===============
+
+import backend.modules.utils as utils
 
 
 class TokenPayload(BaseModel):
@@ -17,19 +41,9 @@ class TokenPayload(BaseModel):
     v: str
 
     def expires_at(self) -> datetime:
-        """UTC timezone-aware expiry datetime"""
-        return datetime.fromtimestamp(self.exp, tz=timezone.utc)
+        """JHB timezone-aware expiry datetime"""
+        return utils.from_timestamp(self.exp)
 
     def issued_at(self) -> datetime:
-        """UTC timezone-aware issued datetime"""
-        return datetime.fromtimestamp(self.iat, tz=timezone.utc)
-
-    def expires_at_local(self) -> datetime:
-        """Convert expiry time to Johannesburg local time"""
-        johannesburg_offset = timedelta(hours=2)
-        return self.expires_at().astimezone(timezone(johannesburg_offset))
-
-    def issued_at_local(self) -> datetime:
-        """Convert issued time to Johannesburg local time"""
-        johannesburg_offset = timedelta(hours=2)
-        return self.issued_at().astimezone(timezone(johannesburg_offset))
+        """JHB timezone-aware issued datetime"""
+        return utils.from_timestamp(self.iat)

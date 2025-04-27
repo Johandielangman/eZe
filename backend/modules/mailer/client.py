@@ -79,7 +79,7 @@ class PrimedMail:
 
 
 class Mailer:
-    from_email: str = "happybread.mail@gmail.com"
+    from_email: str = c.GMAIL_EMAIL_ADDRESS
 
     def __init__(
         self,
@@ -89,7 +89,7 @@ class Mailer:
         self.to: str = to
         self.yag: ModuleType = yagmail.SMTP(
             self.from_email,
-            oauth2_file=str(c.MAILER_DIR / "oauth2.json")
+            oauth2_file=str(c.GOOGLE_OATH_JSON_PATH)
         )
 
     def render(

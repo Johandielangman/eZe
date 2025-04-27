@@ -10,10 +10,16 @@
 
 # =============== // MODULE IMPORTS // ===============
 
-from .date import get_today
+from .date import (
+    get_today,
+    from_timestamp,
+    humanize
+)
 from .log_setup import setup_logger
 
 __all__ = [
     get_today,
+    from_timestamp,
+    humanize,
     setup_logger
 ]
