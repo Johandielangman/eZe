@@ -20,10 +20,10 @@ import requests
 
 # =============== // MODULE IMPORTS // ===============
 
-from backend.modules.stock.utils import (
+from modules.stock.utils import (
     new_session
 )
-import backend.modules.datastructures as dc
+import modules.datastructures as dc
 
 
 class StockAnalysis:
@@ -110,6 +110,6 @@ class StockAnalysis:
         try:
             self.response: requests.Response = self.session.get(self.url)
             self.response.raise_for_status()
-            self.stock = dc.StockData(**self.response.json()['data'])
+            self.stock = dc.StockData.from_api_data(self.response.json()['data'])
         except Exception:
             self.stock = dc.StockData()

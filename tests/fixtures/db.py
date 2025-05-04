@@ -34,7 +34,7 @@ def sqlite_engine() -> Engine:
         Engine: The engine used to connect to the blank database
     """
     # ====> Craft the path to the DB
-    db_path: Path = Path(__file__).parent.parent / 'local' / 'test.db'
+    db_path: Path = Path(__file__).parent.parent / 'local' / 'test_3.db'
     if db_path.exists():
         db_path.unlink()
 

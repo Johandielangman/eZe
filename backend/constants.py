@@ -50,7 +50,8 @@ ENV_FILE_PATH: Path = BACKEND_ROOT / ".env"
 GOOGLE_OATH_JSON_PATH: Path = MAILER_DIR / "oauth2.json"
 VERSION_FILE_PATH: Path = REPOSITORY_ROOT / "version.txt"
 DB_PATH: Path = REPOSITORY_ROOT / "database.db"
-DB_PATH_TEST: Path = TESTS_LOCAL_DIR / "test.db"
+DB_PATH_TEST_1: Path = TESTS_LOCAL_DIR / "test_1.db"
+DB_PATH_TEST_2: Path = TESTS_LOCAL_DIR / "test_2.db"
 
 # =============== // LOAD ENVIRONMENT VARIABLES FROM .ENV // ===============
 
@@ -106,4 +107,5 @@ LANGUAGE: str = "en-gb"
 # =============== // DATABASE // ===============
 
 DATABASE_URL: str = f"sqlite:///{DB_PATH}"
-DATABASE_URL_TEST: str = f"sqlite:///{DB_PATH_TEST}"
+DATABASE_URL_TEST: str = f"sqlite:///{DB_PATH_TEST_1}"
+DATABASE_URL_TEST: str = f"sqlite:///{DB_PATH_TEST_2}"

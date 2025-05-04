@@ -26,6 +26,10 @@ from sqlmodel import (
 )
 from ulid import ULID
 
+# =============== // MODULE IMPORT // ===============
+
+import modules.datastructures as dc
+
 
 # Base TimestampedModel that other models can inherit from
 class TimestampedModel(SQLModel):
@@ -67,11 +71,11 @@ class UserReadWithPortfolios(UserRead):
 # ===== PORTFOLIO MODELS =====
 
 class PortfolioBase(SQLModel):
-    name: str = Field(max_length=10)
+    name: str = Field(max_length=30)
 
 
 class PortfolioCreate(PortfolioBase):
-    pass
+    user_id: str = Field(foreign_key="user_account.id")
 
 
 class Portfolios(TimestampedModel, PortfolioBase, table=True):
@@ -127,7 +131,7 @@ class HistoryRead(HistoryBase):
 
 # ===== STOCK MODELS =====
 
-class StockBase(SQLModel):
+class StockBase(dc.StockData):
     ticker: str = Field(unique=True)
 
 

@@ -16,7 +16,8 @@ from typing import (
 
 # =============== // MODULE IMPORTS // ===============
 
-from backend.modules.stock.stock_analysis import (
+import modules.datastructures as dc
+from modules.stock.stock_analysis import (
     StockAnalysis
 )
 
@@ -27,3 +28,11 @@ def price(
     return StockAnalysis(
         ticker=ticker
     ).stock.price
+
+
+def stock(
+    ticker: str
+) -> dc.StockData:
+    return StockAnalysis(
+        ticker=ticker
+    ).stock

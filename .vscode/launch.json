@@ -12,6 +12,17 @@
       "program": "main.py"
     },
     {
+      "name": "Debug Fast API (/w Create DB)",
+      "type": "debugpy",
+      "request": "launch",
+      "cwd": "${workspaceFolder}/backend",
+      "args": [
+        "--reload",
+        "--create-db"
+      ],
+      "program": "main.py"
+    },
+    {
       "name": "Python Debugger: Current File",
       "type": "debugpy",
       "request": "launch",

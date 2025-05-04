@@ -40,8 +40,8 @@ def test_ping(test_client: 'TestClient') -> None:
 
 @pytest.mark.order(2)
 def test_delete_db():
-    if c.DB_PATH_TEST.exists():
-        c.DB_PATH_TEST.unlink()
+    if c.DB_PATH_TEST_1.exists():
+        c.DB_PATH_TEST_1.unlink()
 
 
 @pytest.mark.order(3)
