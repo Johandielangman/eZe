@@ -48,10 +48,31 @@ router: APIRouter = APIRouter(
 # =============== // ROUTES // ===============
 
 @router.get(
+    "/",
+    response_model=List[db.schema.HoldingRead]
+)
+def read_all_holdings(
+    skip: int = 0,
+    limit: int = 100,
+    session: Session = Depends(get_session),
+):
+    holdings: List[db.schema.HoldingRead] = session.exec(
+        select(
+            db.schema.Holdings
+        ).offset(
+            skip
+        ).limit(
+            limit
+        )
+    ).all()
+    return holdings
+
+
+@router.get(
     "/{portfolio_id}",
     response_model=List[db.schema.HoldingRead]
 )
-def read_holdings(
+def read_holdings_from_portfolio(
     portfolio_id: str,
     skip: int = 0,
     limit: int = 100,
@@ -108,7 +129,22 @@ def create_holding(
     holding: db.schema.HoldingCreate,
     session: Session = Depends(get_session)
 ):
-    # Check if holding already exists
+    db_holding = db.schema.Holdings.model_validate(holding)
+
+    # ====> SOME VALIDATIONS FOR BETTER COMMUNICATION WITH THE USER
+
+    db.utils.validate_portfolio_exists(
+        session=session,
+        portfolio_id=holding.portfolio_id
+    )
+
+    db.utils.validate_stock_exists(
+        session=session,
+        stock_id=holding.stock_id
+    )
+
+    # ====> CHECK TO SEE IF THE HOLDING COMBINATION DOES NOT ALREADY EXIST
+
     existing_holding = session.exec(
         select(
             db.schema.Holdings
@@ -118,13 +154,15 @@ def create_holding(
             db.schema.Holdings.stock_id == holding.stock_id
         )
     ).first()
+
     if existing_holding is not None:
         raise HTTPException(
             status_code=status.HTTP_409_CONFLICT,
             detail="Holding already exists"
         )
 
-    db_holding = db.schema.Holdings.model_validate(holding)
+    # ====> AT THIS POINT, ALL IS GOOD -- CREATE THE HOLDING
+
     session.add(db_holding)
     session.commit()
     session.refresh(db_holding)
