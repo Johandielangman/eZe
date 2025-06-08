@@ -37,7 +37,6 @@ fast_api_metadata: Dict = {
     "title": "eZe Finance",
     "description": read_markdown("DESCRIPTION"),
     "summary": read_markdown("SUMMARY", "txt"),
-    "version": c.VERSION,
     "terms_of_service": "/terms",
     "openapi_tags": tags_metadata,
     "docs_url": "/api-docs",

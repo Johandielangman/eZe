@@ -31,14 +31,13 @@ from fastapi.responses import (
 
 # =============== // MODULE IMPORT // ===============
 
-from dependencies import create_db_and_tables
+from dependencies import create_all_db_tables
 import constants as c
 import modules.utils as utils
 from internal import meta
 
 # ====> APIs
 from routers.v1 import router as router_v1
-from routers.auth import router as auth_router
 
 
 # =============== // SETUP // ===============
@@ -66,7 +65,6 @@ app = FastAPI(
 # =============== // ROUTER CONFIG // ===============
 
 app.include_router(router_v1)
-app.include_router(auth_router)
 
 
 # =============== // MIDDLEWARE // ===============
@@ -122,14 +120,10 @@ if __name__ == "__main__":
     parser.add_argument("--proxy-headers", action="store_true", help="Enable proxy headers")
     parser.add_argument("--root-path", type=str, default="", help="Set root path for the application")
 
-    parser.add_argument("--create-db", action="store_true", help="Create all tables")
-
     args = parser.parse_args()
     logger.info(f"args received: {args}")
 
-    if args.create_db:
-        logger.info("Creating Database")
-        create_db_and_tables()
+    create_all_db_tables(True)
 
     uvicorn.run(
         "main:app",

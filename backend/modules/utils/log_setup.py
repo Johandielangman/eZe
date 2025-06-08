@@ -35,7 +35,7 @@ def setup_debug_log(
     logger: 'Logger',
     dir: Path = c.DEBUG_LOGS_DIR
 ) -> None:
-    debug_logs: str = f"debug_{get_today()}.log"
+    debug_logs: str = f"eze_debug_{get_today()}.log"
     logger.add(
         f"{dir / debug_logs}",
         level="DEBUG",
@@ -50,7 +50,7 @@ def setup_error_log(
     logger: 'Logger',
     dir: Path = c.ERROR_LOGS_DIR
 ) -> None:
-    warning_logs: str = f"errors_{get_today()}.log"
+    warning_logs: str = f"eze_errors_{get_today()}.log"
     logger.add(
         f"{c.ERROR_LOGS_DIR / warning_logs}",
         level="WARNING",

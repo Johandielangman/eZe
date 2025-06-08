@@ -17,8 +17,11 @@
       "request": "launch",
       "cwd": "${workspaceFolder}/backend",
       "args": [
-        "--reload",
-        "--create-db"
+        "--host",
+        "localhost",
+        "--port",
+        "8081",
+        "--reload"
       ],
       "program": "main.py"
     },

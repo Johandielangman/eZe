@@ -15,10 +15,6 @@ from fastapi import APIRouter
 # =============== // MODULE IMPORT // ===============
 
 from routers.v1 import users
-from routers.v1 import portfolios
-from routers.v1 import stocks
-from routers.v1 import holdings
-
 
 # =============== // DEFINE THE ROUTER // ===============
 
@@ -27,6 +23,3 @@ router: APIRouter = APIRouter(
     responses={404: {"description": "Not found"}},
 )
 router.include_router(users.router)
-router.include_router(portfolios.router)
-router.include_router(stocks.router)
-router.include_router(holdings.router)

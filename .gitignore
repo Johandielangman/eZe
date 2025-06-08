@@ -1,13 +1,29 @@
 .venv
 __pycache__
-.env
 .bandit.report.txt
 tests/local/*
-!tests/local/.gitkeep
 .coverage
 
 docs/build/
 docs/coverage/
+logs/
 
 oauth2.json
 database.db
+postgres/*
+!cloudflared/config.yml
+
+grafana/*
+!grafana/provisioning/
+
+!postgres/.gitkeep
+!compose-secrets/.gitkeep
+!tests/local/.gitkeep
+
+# CREDENTIALS
+rabbitmq/definitions.json
+compose-secrets
+cloudflared/*
+
+.env
+backend (old)

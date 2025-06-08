@@ -3,6 +3,7 @@
     "python.testing.pytestEnabled": true,
     "cSpell.words": [
         "autorestart",
+        "checkfirst",
         "childlogdir",
         "DFORMAT",
         "logfile",

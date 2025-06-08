@@ -7,7 +7,7 @@ pyjwt[crypto]
 passlib[bcrypt]
 yagmail[all]
 
-kinde-python-sdk
 loguru
 arrow
 sqlmodel
+psycopg2-binary

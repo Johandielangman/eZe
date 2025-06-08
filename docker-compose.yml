@@ -1,0 +1,154 @@
+version: "3"
+services:
+  postgres:
+    image: postgres:15
+    container_name: postgres
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_DB: default
+      POSTGRES_PASSWORD_FILE: /run/secrets/postgres_password
+    volumes:
+      - ./postgres/pg_data:/var/lib/postgresql/data
+      - ./logs:/var/log/app
+    ports:
+      - "5432:5432"
+    secrets:
+      - postgres_password
+    networks:
+      - webnet
+
+  pgadmin:
+    image: dpage/pgadmin4
+    container_name: pgadmin
+    restart: always
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@local.dev
+      PGADMIN_DEFAULT_PASSWORD_FILE: /run/secrets/pgadmin_password
+      PGADMIN_CONFIG_SERVER_MODE: "True"
+    volumes:
+      - ./postgres/pgadmin_data:/var/lib/pgadmin
+      - ./logs:/var/log/app
+    secrets:
+      - pgadmin_password
+    networks:
+      - webnet
+    depends_on:
+      - postgres
+
+  backend-service:
+    build:
+      context: "./backend"
+      dockerfile: "backend-service.dockerfile"
+    container_name: backend
+    # restart: always
+    environment:
+      MODE: "production"
+    env_file: "./backend/.env"
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./logs:/var/log/app
+    deploy:
+      mode: replicated
+      replicas: 1
+    networks:
+      - webnet
+    depends_on:
+      - postgres
+
+  rabbitmq:
+    image: rabbitmq:4-management
+    container_name: rabbitmq
+    ports:
+      - "5672:5672" # RabbitMQ protocol
+      - "15672:15672" # RabbitMQ management UI
+    volumes:
+      - ./logs:/var/log/app
+    networks:
+      - webnet
+    restart: always
+
+  nginx:
+    image: nginx:latest
+    container_name: nginx
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx/conf.d:/etc/nginx/conf.d
+      - ./nginx/html:/usr/share/nginx/html
+      - ./logs:/var/log/nginx
+    networks:
+      - webnet
+    restart: always
+    depends_on:
+      - backend-service
+
+  cloudflared:
+    image: cloudflare/cloudflared:latest
+    container_name: cloudflared
+    # restart: always
+    command: tunnel run eze-tunnel
+    volumes:
+      - ./cloudflared:/etc/cloudflared
+    networks:
+      - webnet
+    depends_on:
+      - nginx
+
+  # Loki - Log aggregation system
+  loki:
+    image: grafana/loki:2.9.0
+    container_name: loki
+    ports:
+      - "3100:3100"
+    command: -config.file=/etc/loki/local-config.yaml
+    volumes:
+      - loki_data:/loki
+    networks:
+      - webnet
+    restart: always
+
+  grafana:
+    image: grafana/grafana:latest
+    container_name: grafana
+    ports:
+      - "3000:3000"
+    environment:
+      - GF_INSTALL_PLUGINS=grafana-clock-panel,grafana-simple-json-datasource
+    volumes:
+      - ./grafana/provisioning:/etc/grafana/provisioning
+      - ./grafana/plugins:/var/lib/grafana/plugins
+      - ./grafana/logs:/var/log/grafana
+      - grafana_data:/var/lib/grafana
+    networks:
+      - webnet
+    depends_on:
+      - loki
+    restart: always
+
+  fluent-bit:
+    image: fluent/fluent-bit:latest
+    container_name: fluent-bit
+    volumes:
+      - ./fluent-bit:/fluent-bit/etc
+      - ./logs:/var/log
+    networks:
+      - webnet
+    depends_on:
+      - loki
+    restart: always
+
+secrets:
+  postgres_password:
+    file: ./compose-secrets/postgres_password
+  pgadmin_password:
+    file: ./compose-secrets/pgadmin_password
+
+volumes:
+  grafana_data:
+  loki_data:
+
+networks:
+  webnet:
