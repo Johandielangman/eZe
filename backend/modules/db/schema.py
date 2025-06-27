@@ -48,6 +48,7 @@ class UserCreate(UserBase):
 
 class User(TimestampedModel, UserBase, table=True):
     __tablename__ = "user_account"
+    __table_args__ = {"extend_existing": True}
 
     id: str = Field(default_factory=lambda: str(ULID()), primary_key=True)
     password_hash: str = Field(max_length=4_000, default="")

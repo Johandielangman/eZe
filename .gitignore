@@ -27,3 +27,4 @@ cloudflared/*
 
 .env
 backend (old)
+*.db

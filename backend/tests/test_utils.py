@@ -18,8 +18,8 @@ import arrow
 
 # =============== // MODULE IMPORT // ===============
 
-import backend.modules.utils as utils
-import backend.constants as c
+import modules.utils as utils
+import constants as c
 
 
 def test_get_today_default_format():

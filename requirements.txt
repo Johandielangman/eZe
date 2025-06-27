@@ -1,2 +1,2 @@
 -r backend/requirements.txt
--r docs/requirements.txt
+-r mailer/requirements.txt

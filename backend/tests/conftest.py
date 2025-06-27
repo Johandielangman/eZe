@@ -8,20 +8,18 @@
 #
 # ~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~
 
-import sys
-from pathlib import Path
 
-sys.path.append(str(Path(__file__).parent.parent / "backend"))
-
-from .fixtures.db import ( # NOQA
-    sqlite_engine
+from tests.fixtures.db import ( # NOQA
+    sqlite_engine,
+    sqlite_session
 )
 
-from .fixtures.fastapi import ( # NOQA
+from tests.fixtures.fastapi import ( # NOQA
     test_client
 )
 
 __all__ = [
     sqlite_engine,
-    test_client
+    test_client,
+    sqlite_session
 ]

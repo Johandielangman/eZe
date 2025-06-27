@@ -23,7 +23,7 @@ from validator_collection import checkers
 
 # =============== // MODULE IMPORTS // ===============
 
-import backend.modules.stock as sm
+import modules.stock as sm
 
 # =============== // SETUP // ===============
 

@@ -18,13 +18,20 @@ from typing import (
 
 # =============== // LIBRARY IMPORT // ===============
 
+import jwt
 import psycopg2  # noqa: F401
 from loguru import logger
-from fastapi import (
-    Request,
+from sqlmodel import (
+    Session,
+    create_engine,
+    select
 )
-from sqlmodel import Session, create_engine
-
+from fastapi.security import OAuth2PasswordBearer
+from fastapi import (
+    Depends,
+    status,
+    HTTPException
+)
 
 # =============== // MODULE IMPORT // ===============
 
@@ -50,9 +57,40 @@ def create_all_db_tables(drop_before_create: bool = False) -> None:
     )
 
 
-def get_session(request: Request) -> Generator[Session, None, None]:
-    if "get_session" in request.app.dependency_overrides:
-        yield request.app.dependency_overrides["get_session"]()
-    else:
-        with Session(engine) as session:
-            yield session
+def get_session() -> Generator[Session, None, None]:
+    with Session(engine) as session:
+        yield session
+
+
+oauth2_bearer = OAuth2PasswordBearer(
+    tokenUrl='v1/auth/token'
+)
+
+
+def get_current_user(
+    token: str = Depends(oauth2_bearer),
+    session: Session = Depends(get_session)
+) -> db.schema.User:
+    try:
+        payload = jwt.decode(
+            token,
+            c.JWT_SECRET_KEY,
+            algorithms=[c.JWT_ALGORITHM]
+        )
+        user_id: str = payload.get("id")
+        if user_id is None:
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="Invalid authentication credentials",
+                headers={"WWW-Authenticate": "Bearer"}
+            )
+        user: db.schema.User = session.exec(
+            select(db.schema.User).where(db.schema.User.id == user_id)
+        ).one()
+        return user
+    except jwt.PyJWTError:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Invalid authentication credentials",
+            headers={"WWW-Authenticate": "Bearer"}
+        ) from None

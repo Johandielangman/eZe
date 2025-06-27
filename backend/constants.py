@@ -17,6 +17,7 @@ import os
 # =============== // LIBRARY IMPORT // ===============
 
 from dotenv import load_dotenv
+from passlib.context import CryptContext
 
 # =============== // MODULE IMPORT // ===============
 
@@ -95,3 +96,18 @@ ERROR_LOGS_DIR.mkdir(parents=True, exist_ok=True)
 TZ: str = "Africa/Johannesburg"
 DFORMAT_DATE_FOR_FILE: str = "%Y_%m_%d"
 LANGUAGE: str = "en-gb"
+
+# =============== // AUTH // ===============
+
+JWT_SECRET_KEY: str = os.getenv("JWT_SECRET_KEY")
+if JWT_SECRET_KEY is None:
+    raise ValueError("JWT_SECRET_KEY environment variable is not set.")
+
+JWT_ALGORITHM: str = os.getenv("JWT_ALGORITHM")
+if JWT_ALGORITHM is None:
+    raise ValueError("JWT_ALGORITHM environment variable is not set.")
+
+BCRYPT_CONTEXT = CryptContext(
+    schemes=['bcrypt'],
+    deprecated='auto'
+)
